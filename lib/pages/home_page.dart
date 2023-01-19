@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
@@ -5,9 +7,19 @@ class HomePage extends StatefulWidget {
   State<StatefulWidget> createState() => _HomeState();
 }
 
-class _HomeState extends State<HomePage> {
+class _HomeState extends State<HomePage> with SingleTickerProviderStateMixin {
   double _buttonRadius = 100;
   final Tween<double> _backgroundScale = Tween<double>(begin: 0.0, end: 1.0);
+  AnimationController? _starAnimationController;
+
+  @override
+  void initState() {
+    super.initState();
+    _starAnimationController =
+        AnimationController(vsync: this, duration: const Duration(seconds: 4));
+
+    _starAnimationController!.repeat();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -17,18 +29,39 @@ class _HomeState extends State<HomePage> {
           clipBehavior: Clip.none,
           children: [
             _pageBackground(),
-            _circularAnimationButton(),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              mainAxisSize: MainAxisSize.max,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [_circularAnimationButton(), _starIconAnimation()],
+            )
           ],
         ),
       ),
     );
   }
 
+  Widget _starIconAnimation() {
+    return AnimatedBuilder(
+        animation: _starAnimationController!.view,
+        builder: (buildContext, child) {
+          return Transform.rotate(
+            angle: _starAnimationController!.value * 2 * pi,
+            child: child,
+          );
+        },
+        child: const Icon(
+          Icons.star,
+          size: 100,
+          color: Colors.amber,
+        ));
+  }
+
   Widget _pageBackground() {
     return TweenAnimationBuilder(
         tween: _backgroundScale,
         curve: Curves.easeInOutCubicEmphasized,
-        duration: const Duration(seconds: 2),
+        duration: const Duration(seconds: 1),
         builder: (context, double scale, child) {
           return Transform.scale(scale: scale, child: child);
         },
