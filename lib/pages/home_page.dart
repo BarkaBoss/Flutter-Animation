@@ -7,10 +7,11 @@ class HomePage extends StatefulWidget {
   State<StatefulWidget> createState() => _HomeState();
 }
 
-class _HomeState extends State<HomePage> with SingleTickerProviderStateMixin {
+class _HomeState extends State<HomePage> with TickerProviderStateMixin {
   double _buttonRadius = 100;
   final Tween<double> _backgroundScale = Tween<double>(begin: 0.0, end: 1.0);
   AnimationController? _starAnimationController;
+  AnimationController? _imageAnimationController;
 
   @override
   void initState() {
@@ -19,6 +20,10 @@ class _HomeState extends State<HomePage> with SingleTickerProviderStateMixin {
         AnimationController(vsync: this, duration: const Duration(seconds: 4));
 
     _starAnimationController!.repeat();
+
+    _imageAnimationController =
+        AnimationController(vsync: this, duration: const Duration(seconds: 2));
+    _imageAnimationController!.forward();
   }
 
   @override
@@ -33,12 +38,25 @@ class _HomeState extends State<HomePage> with SingleTickerProviderStateMixin {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               mainAxisSize: MainAxisSize.max,
               crossAxisAlignment: CrossAxisAlignment.center,
-              children: [_circularAnimationButton(), _starIconAnimation()],
+              children: [_circularAnimationButton(), _imageAnimation(), _starIconAnimation()],
             )
           ],
         ),
       ),
     );
+  }
+
+  Widget _imageAnimation() {
+    return AnimatedBuilder(
+        animation: _imageAnimationController!.view,
+        builder: (buildContext, child) {
+          return Transform.translate(offset: Offset(_imageAnimationController!.value, _imageAnimationController!.value * -60,), child: child,);
+        },
+        child: const Icon(
+          Icons.sports_soccer,
+          size: 100,
+          color: Colors.amber,
+        ));
   }
 
   Widget _starIconAnimation() {
@@ -61,7 +79,7 @@ class _HomeState extends State<HomePage> with SingleTickerProviderStateMixin {
     return TweenAnimationBuilder(
         tween: _backgroundScale,
         curve: Curves.easeInOutCubicEmphasized,
-        duration: const Duration(seconds: 1),
+        duration: const Duration(seconds: 2),
         builder: (context, double scale, child) {
           return Transform.scale(scale: scale, child: child);
         },
